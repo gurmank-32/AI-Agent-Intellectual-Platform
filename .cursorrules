@@ -1,0 +1,34 @@
+## Project
+Housing Regulation Compliance Agent — see ARCHITECTURE.md, FEATURES.md, DATA_MODELS.md, PROMPTS.md for full context.
+
+## Stack rules
+- Python 3.11, Streamlit multi-page, Supabase, Pydantic v2, anthropic SDK
+- Primary LLM: claude-sonnet-4-20250514 via anthropic SDK
+- Fallback LLM: openai gpt-4o if ANTHROPIC_API_KEY not set
+- Final fallback: rule-based engine in core/compliance/rules.py (no API key needed)
+
+## Architecture rules
+- pages/ files: UI only — import from core/ and db/, zero business logic
+- core/ files: never import streamlit
+- All DB access: db/client.py only — never call supabase directly elsewhere
+- All LLM calls: core/llm/client.py only — never import anthropic/openai elsewhere
+- Config: config.py using Pydantic Settings — never use os.getenv() directly
+
+## Code quality rules
+- Type hints on every function signature
+- Pydantic models for all DB row types — never return raw dicts from DB functions
+- Never use eval() — always json.loads()
+- Never hardcode city, state, or jurisdiction names in logic files
+- Jurisdiction resolution always via DB lookup returning jurisdiction_id (int)
+- deduplicate_sources() from core/rag/utils.py — never inline dedup logic
+- Legal disclaimer always appended from config.LEGAL_DISCLAIMER
+
+## Naming conventions
+- DB query functions: get_*, create_*, update_*, delete_* prefix
+- Pydantic models: PascalCase matching table name (Regulation, Jurisdiction etc)
+- Page functions: show_* prefix for each UI section
+- Core functions: snake_case, descriptive verbs
+
+## Testing
+- Every core/ module must have a corresponding test in tests/
+- Tests must not call Supabase — use dependency injection with mock db client
