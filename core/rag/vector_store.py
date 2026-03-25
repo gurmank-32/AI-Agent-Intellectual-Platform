@@ -12,6 +12,7 @@ class SearchResult(BaseModel):
     document: str
     metadata: dict[str, Any]
     score: float
+    row_id: Optional[int] = None
 
 
 def _chunk_text(text: str, chunk_size: int = 800, overlap: int = 100) -> list[str]:
@@ -78,13 +79,17 @@ class RegulationVectorStore:
             db.table("regulation_embeddings").insert(rows[i : i + batch_size]).execute()
 
     def search(
-        self, query: str, n_results: int = 10, jurisdiction_id: int | None = None
+        self,
+        query: str,
+        n_results: int = 10,
+        jurisdiction_id: int | None = None,
+        query_embedding: list[float] | None = None,
     ) -> list[SearchResult]:
         db = get_db()
 
-        query_embedding = llm.embed(query)
+        qemb = query_embedding if query_embedding is not None else llm.embed(query)
         payload: dict[str, Any] = {
-            "query_embedding": query_embedding,
+            "query_embedding": qemb,
             "match_count": int(n_results),
             "filter_jurisdiction": jurisdiction_id,
         }
@@ -92,11 +97,13 @@ class RegulationVectorStore:
 
         out: list[SearchResult] = []
         for row in res.data or []:
+            rid = row.get("id")
             out.append(
                 SearchResult(
                     document=row.get("chunk_text") or "",
                     metadata=row.get("metadata") or {},
                     score=float(row.get("similarity") or 0.0),
+                    row_id=int(rid) if rid is not None else None,
                 )
             )
         return out

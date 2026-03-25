@@ -176,6 +176,13 @@ def main() -> None:
             if not url:
                 continue
 
+            category = (row.get("category") or "").strip()
+            city_name = (row.get("city_name") or "").strip()
+            law_name = (row.get("law_name") or "").strip()
+            # Keep non-empty seed text so vector search has at least some content.
+            content = f"{law_name} {url}".strip()
+            content_hash = _sha256(content or url)
+
             # Idempotency: skip if there is already an `is_current` row with the same content_hash.
             existing_current_res = (
                 db.table("regulations")
@@ -194,13 +201,7 @@ def main() -> None:
                     skipped += 1
                     continue
 
-            category = (row.get("category") or "").strip()
-            city_name = (row.get("city_name") or "").strip()
-            law_name = (row.get("law_name") or "").strip()
-
             jurisdiction_id = _resolve_jurisdiction_id(category=category, city_name=city_name)
-            content = ""
-            content_hash = _sha256(url)
 
             payload: dict[str, Any] = {
                 "jurisdiction_id": jurisdiction_id,

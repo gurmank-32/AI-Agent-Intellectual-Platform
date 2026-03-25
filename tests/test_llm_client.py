@@ -6,12 +6,13 @@ import pytest
 
 
 def test_rule_based_mode_when_no_keys() -> None:
-    """When neither API key is set, LLMClient falls back to rule_based mode."""
+    """When no API key is set, LLMClient falls back to rule_based mode."""
     env = {
         "SUPABASE_URL": "https://fake.supabase.co",
         "SUPABASE_KEY": "fake-key",
         "ANTHROPIC_API_KEY": "",
         "OPENAI_API_KEY": "",
+        "GOOGLE_API_KEY": "",
     }
     with patch.dict("os.environ", env, clear=False):
         from importlib import reload
@@ -27,6 +28,31 @@ def test_rule_based_mode_when_no_keys() -> None:
         client = _mod.LLMClient()
         assert client.mode == "rule_based"
         assert client.is_ai_available() is False
+
+
+def test_gemini_mode_when_only_google_key() -> None:
+    """When only GOOGLE_API_KEY is set, LLMClient uses gemini mode."""
+    env = {
+        "SUPABASE_URL": "https://fake.supabase.co",
+        "SUPABASE_KEY": "fake-key",
+        "ANTHROPIC_API_KEY": "",
+        "OPENAI_API_KEY": "",
+        "GOOGLE_API_KEY": "fake-google-key",
+    }
+    with patch.dict("os.environ", env, clear=False):
+        from importlib import reload
+
+        import config as _cfg
+
+        reload(_cfg)
+
+        import core.llm.client as _mod
+
+        reload(_mod)
+
+        client = _mod.LLMClient()
+        assert client.mode == "gemini"
+        assert client.is_ai_available() is True
 
 
 def test_ask_json_parses_correctly() -> None:

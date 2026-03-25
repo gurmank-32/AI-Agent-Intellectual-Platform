@@ -49,7 +49,7 @@ CREATE INDEX IF NOT EXISTS regulations_url_idx ON regulations(url);
 CREATE TABLE IF NOT EXISTS regulation_embeddings (
   id SERIAL PRIMARY KEY,
   regulation_id INT NOT NULL REFERENCES regulations(id) ON DELETE CASCADE,
-  embedding vector(1536) NOT NULL,
+  embedding vector(3072) NOT NULL,
   chunk_text TEXT NOT NULL
 );
 
@@ -109,7 +109,7 @@ CREATE INDEX IF NOT EXISTS insurance_requirements_source_regulation_id_idx ON in
 
 -- pgvector search function
 CREATE OR REPLACE FUNCTION match_regulations(
-  query_embedding vector(1536),
+  query_embedding vector(3072),
   match_count int,
   filter_jurisdiction int DEFAULT NULL
 ) RETURNS TABLE(id int, chunk_text text, similarity float, metadata jsonb)
@@ -120,8 +120,21 @@ BEGIN RETURN QUERY
     row_to_json(r)::jsonb AS metadata
   FROM regulation_embeddings e
   JOIN regulations r ON r.id = e.regulation_id
-  WHERE (filter_jurisdiction IS NULL OR r.jurisdiction_id = filter_jurisdiction)
-    AND r.is_current = true
+  WHERE r.is_current = true
+    AND (
+      filter_jurisdiction IS NULL
+      OR r.jurisdiction_id = filter_jurisdiction
+      OR r.jurisdiction_id IN (
+        SELECT j.id FROM jurisdictions j WHERE j.type = 'federal'
+      )
+      OR EXISTS (
+        SELECT 1
+        FROM jurisdictions sel
+        WHERE sel.id = filter_jurisdiction
+          AND sel.type = 'city'
+          AND r.jurisdiction_id = sel.parent_id
+      )
+    )
   ORDER BY e.embedding <=> query_embedding
   LIMIT match_count;
 END; $$;
