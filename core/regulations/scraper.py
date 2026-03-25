@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import io
 import logging
+import re
 from pathlib import Path
 from typing import Any, Optional
 
 import requests
 from bs4 import BeautifulSoup
+from PyPDF2 import PdfReader
 
 from core.rag.vector_store import RegulationVectorStore
 from db.client import get_db
@@ -350,14 +353,27 @@ class RegulationScraper:
             logger.warning("Unreachable URL %s: %s", url, exc)
             return None
 
-        soup = BeautifulSoup(resp.text, "html.parser")
+        content_type = (resp.headers.get("content-type") or "").lower()
+        is_pdf = url.lower().endswith(".pdf") or "application/pdf" in content_type
 
-        for tag in soup(["script", "style", "nav", "footer", "header"]):
-            tag.decompose()
+        if is_pdf:
+            try:
+                reader = PdfReader(io.BytesIO(resp.content))
+                pages = [(page.extract_text() or "").strip() for page in reader.pages]
+                text = "\n".join(p for p in pages if p)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Failed PDF extraction for %s: %s", url, exc)
+                return None
+        else:
+            soup = BeautifulSoup(resp.text, "html.parser")
+            for tag in soup(["script", "style", "nav", "footer", "header"]):
+                tag.decompose()
+            text = soup.get_text(separator="\n", strip=True)
 
-        text = soup.get_text(separator="\n", strip=True)
-        if not text:
-            text = resp.text
+        text = re.sub(r"\n{3,}", "\n\n", (text or "")).strip()
+        if len(text) < 120:
+            logger.warning("Low-content page for %s (len=%s) — skipping", url, len(text))
+            return None
 
         content_hash = _sha256(text)
 
