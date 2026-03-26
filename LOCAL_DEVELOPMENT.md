@@ -42,9 +42,10 @@ Edit `.env` and set:
 
 - `SUPABASE_URL`
 - `SUPABASE_KEY`
-- Optional LLM keys:
+- Optional LLM keys (priority order — first key found is used):
   - `ANTHROPIC_API_KEY` (primary)
   - `OPENAI_API_KEY` (fallback)
+  - `GOOGLE_API_KEY` (Google Gemini fallback)
 - Optional SMTP keys (for email alerts):
   - `SMTP_EMAIL`, `SMTP_PASSWORD`, `SMTP_HOST`, `SMTP_PORT`
 
@@ -172,7 +173,7 @@ Then use:
    - Ask a compliance-related question (the UI routes to the compliance checker)
 
 Notes:
-- If LLM API keys are not configured, the app falls back to a rule-based compliance engine.
+- If no LLM API key is configured (Anthropic, OpenAI, or Google Gemini), the app falls back to a rule-based compliance engine.
 - Each answer includes a **Sources** section (deduplicated).
 
 ### B) Regulation Explorer (`pages/2_explorer.py`)

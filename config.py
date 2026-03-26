@@ -10,6 +10,9 @@ class Settings(BaseSettings):
 
     ANTHROPIC_API_KEY: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None
+    GOOGLE_API_KEY: Optional[str] = None
+    CHAT_PROVIDER: str = "auto"
+    EMBED_PROVIDER: str = "gemini"
     SUPABASE_URL: str
     SUPABASE_KEY: str
     SMTP_EMAIL: Optional[str] = None
@@ -24,11 +27,32 @@ class Settings(BaseSettings):
 
     @property
     def has_anthropic_key(self) -> bool:
-        return bool(self.ANTHROPIC_API_KEY)
+        return self._is_real_key(self.ANTHROPIC_API_KEY)
 
     @property
     def has_openai_key(self) -> bool:
-        return bool(self.OPENAI_API_KEY)
+        return self._is_real_key(self.OPENAI_API_KEY)
+
+    @property
+    def has_google_key(self) -> bool:
+        return self._is_real_key(self.GOOGLE_API_KEY)
+
+    @staticmethod
+    def _is_real_key(value: Optional[str]) -> bool:
+        v = (value or "").strip()
+        if not v:
+            return False
+        return v.lower() not in {"your_key_here", "changeme", "replace_me"}
+
+    @property
+    def chat_provider(self) -> str:
+        p = (self.CHAT_PROVIDER or "auto").strip().lower()
+        return p if p in {"auto", "anthropic", "openai", "gemini"} else "auto"
+
+    @property
+    def embed_provider(self) -> str:
+        p = (self.EMBED_PROVIDER or "gemini").strip().lower()
+        return p if p in {"gemini", "openai"} else "gemini"
 
     @property
     def has_smtp(self) -> bool:
@@ -41,6 +65,12 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# RAG pipeline constants — used by core/rag/vector_store.py and core/rag/qa_system.py
+CHUNK_SIZE: int = 800          # characters per text chunk when indexing
+CHUNK_OVERLAP: int = 200       # overlap between consecutive chunks (sliding window)
+MAX_CONTEXT_CHARS: int = 4000  # max total characters passed to LLM as context (~1000 tokens)
+EMBEDDING_DIMS: int = 1536     # vector dimensions (matches regulation_embeddings table)
 
 # Canonical, stable import path used across the app.
 LEGAL_DISCLAIMER: str = settings.LEGAL_DISCLAIMER
