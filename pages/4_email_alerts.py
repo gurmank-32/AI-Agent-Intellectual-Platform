@@ -6,10 +6,12 @@ import streamlit as st
 
 from core.regulations.explorer import get_state_jurisdiction_options
 from core.notifications.email_alerts import email_alerts
+from core.ui import apply_ui
 
 
 def show_page() -> None:
-    st.title("Email Alerts")
+    apply_ui()
+    st.title("Email Alerts", anchor=False)
 
     state_options = get_state_jurisdiction_options()
     state_names = [s["name"] for s in state_options]
@@ -18,7 +20,7 @@ def show_page() -> None:
     col_sub, col_unsub = st.columns(2)
 
     with col_sub:
-        st.subheader("Subscribe")
+        st.subheader("Subscribe", anchor=False)
         sub_email = st.text_input("Email")
         sub_state_name = st.selectbox(
             "State", options=state_names if state_names else ["(No states)"], index=0
@@ -39,7 +41,7 @@ def show_page() -> None:
                 st.success("Subscription saved (welcome email sent if SMTP is configured).")
 
     with col_unsub:
-        st.subheader("Unsubscribe")
+        st.subheader("Unsubscribe", anchor=False)
         unsub_email = st.text_input("Email", key="unsub_email")
         unsub_state_name = st.selectbox(
             "State",
@@ -65,7 +67,7 @@ def show_page() -> None:
                 st.success("You have been unsubscribed.")
 
     st.divider()
-    st.subheader("View subscriptions")
+    st.subheader("View subscriptions", anchor=False)
     view_email = st.text_input("Enter email to view active subscriptions", key="view_email")
     if st.button("Load subscriptions", key="load_subs"):
         if not view_email.strip():
@@ -79,7 +81,7 @@ def show_page() -> None:
                     st.write(f"- {s['jurisdiction_name']}")
 
     st.divider()
-    st.subheader("Daily digest emails")
+    st.subheader("Daily digest emails", anchor=False)
     st.write(
         "Subscribers receive a daily digest of newly detected regulation updates for their selected jurisdictions. "
         "If immediate alerts are enabled for a category update, those may be sent sooner."

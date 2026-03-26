@@ -6,11 +6,13 @@ import streamlit as st
 
 from core.regulations.explorer import get_state_jurisdiction_options
 from core.regulations.update_checker import update_checker
+from core.ui import apply_ui
 from db.client import get_db
 
 
 def show_page() -> None:
-    st.title("Update Log")
+    apply_ui()
+    st.title("Update Log", anchor=False)
 
     state_options = get_state_jurisdiction_options()
     state_names = ["(All states)"] + [s["name"] for s in state_options]
@@ -76,7 +78,7 @@ def show_page() -> None:
         for row in juris_res.data or []:
             jid_to_name[int(row["id"])] = str(row.get("name") or row["id"])
 
-    st.subheader("Latest regulation updates")
+    st.subheader("Latest regulation updates", anchor=False)
     for u in deduped:
         category = str(getattr(u, "category", "") or "")
         url = str(getattr(u, "url", "") or "")

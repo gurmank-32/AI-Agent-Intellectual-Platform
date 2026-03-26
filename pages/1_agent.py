@@ -8,6 +8,7 @@ import config
 from core.compliance.checker import checker
 from core.rag.qa_system import qa
 from core.rag.utils import deduplicate_sources
+from core.ui import apply_ui
 from db.client import get_db
 from db.models import Jurisdiction
 
@@ -67,7 +68,7 @@ def _load_cities(state_id: int) -> list[Jurisdiction]:
 
 def _show_sidebar() -> None:
     with st.sidebar:
-        st.header("Jurisdiction")
+        st.header("Jurisdiction", anchor=False)
 
         try:
             states = _load_states()
@@ -326,7 +327,8 @@ def _render_empty_state() -> None:
 
 
 def show_agent_page() -> None:
-    st.title("Intelligence Platform Agent")
+    apply_ui()
+    st.title("Intelligence Platform Agent", anchor=False)
     _init_state()
     _show_sidebar()
     active_file = _show_file_uploader()

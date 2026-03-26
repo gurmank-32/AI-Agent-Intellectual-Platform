@@ -5,10 +5,12 @@ from typing import Any, Optional
 import streamlit as st
 
 from core.regulations import explorer
+from core.ui import apply_ui
 
 
 def show_page() -> None:
-    st.title("Regulation Explorer")
+    apply_ui()
+    st.title("Regulation Explorer", anchor=False)
 
     metrics = explorer.get_explorer_metrics()
     c1, c2, c3 = st.columns(3)
@@ -49,7 +51,7 @@ def show_page() -> None:
             n_results=10,
         )
 
-        st.subheader("Results")
+        st.subheader("Results", anchor=False)
         if not results:
             st.info("No matching regulations found.")
             return
