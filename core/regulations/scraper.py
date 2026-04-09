@@ -8,7 +8,10 @@ import re
 from pathlib import Path
 from typing import Any, Optional
 
+import time
+
 import requests
+import urllib3
 from bs4 import BeautifulSoup
 from PyPDF2 import PdfReader
 
@@ -17,6 +20,68 @@ from db.client import get_db
 from db.models import Regulation
 
 logger = logging.getLogger(__name__)
+
+_HTTP_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/pdf,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
+
+_MAX_RETRIES = 2
+_INITIAL_TIMEOUT = 45
+_RETRY_BACKOFF = 5
+
+_session: requests.Session | None = None
+
+
+def _get_session() -> requests.Session:
+    """Reusable session — keeps cookies across requests (needed for sites like mass.gov)."""
+    global _session
+    if _session is None:
+        _session = requests.Session()
+        _session.headers.update(_HTTP_HEADERS)
+    return _session
+
+
+def _robust_get(url: str, *, timeout: int = _INITIAL_TIMEOUT) -> requests.Response | None:
+    """Fetch a URL with session, retries, SSL-fallback, and exponential back-off."""
+    session = _get_session()
+    last_exc: Exception | None = None
+    for attempt in range(1, _MAX_RETRIES + 1):
+        try:
+            resp = session.get(url, timeout=timeout)
+            return resp
+        except requests.exceptions.SSLError:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            try:
+                resp = session.get(url, timeout=timeout, verify=False)
+                logger.info("SSL-verify disabled fallback succeeded for %s", url)
+                return resp
+            except Exception as exc:
+                last_exc = exc
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+            last_exc = exc
+            if attempt < _MAX_RETRIES:
+                wait = _RETRY_BACKOFF * attempt
+                logger.info("Retry %s/%s for %s in %ss", attempt, _MAX_RETRIES, url, wait)
+                time.sleep(wait)
+        except Exception as exc:
+            last_exc = exc
+            break
+
+    logger.warning("Unreachable URL %s after %s attempts: %s", url, _MAX_RETRIES, last_exc)
+    return None
 
 STATE_NAME_TO_CODE: dict[str, str] = {
     "Alabama": "AL",
@@ -421,13 +486,11 @@ class RegulationScraper:
         domain: str,
         category: str,
     ) -> Regulation | None:
-        try:
-            resp = requests.get(url, timeout=30)
-            if resp.status_code >= 400:
-                logger.warning("HTTP %s for %s — skipping", resp.status_code, url)
-                return None
-        except Exception as exc:
-            logger.warning("Unreachable URL %s: %s", url, exc)
+        resp = _robust_get(url)
+        if resp is None:
+            return None
+        if resp.status_code >= 400:
+            logger.warning("HTTP %s for %s — skipping", resp.status_code, url)
             return None
 
         content_type = (resp.headers.get("content-type") or "").lower()
@@ -447,7 +510,8 @@ class RegulationScraper:
                 tag.decompose()
             text = soup.get_text(separator="\n", strip=True)
 
-        text = re.sub(r"\n{3,}", "\n\n", (text or "")).strip()
+        text = (text or "").replace("\x00", "")
+        text = re.sub(r"\n{3,}", "\n\n", text).strip()
         if len(text) < 120:
             logger.warning("Low-content page for %s (len=%s) — skipping", url, len(text))
             return None

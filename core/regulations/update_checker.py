@@ -4,13 +4,43 @@ import hashlib
 from datetime import datetime
 from typing import Any, Callable, Optional
 
+import time
+
 import requests
+import urllib3
 from pydantic import BaseModel
 
 from config import settings
 from core.llm.client import llm
 from core.llm.prompts import UPDATE_SUMMARY_PROMPT
 from db.client import get_db
+
+_HTTP_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/pdf,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
+
+_uc_session: requests.Session | None = None
+
+
+def _get_uc_session() -> requests.Session:
+    global _uc_session
+    if _uc_session is None:
+        _uc_session = requests.Session()
+        _uc_session.headers.update(_HTTP_HEADERS)
+    return _uc_session
 
 
 class UpdateResult(BaseModel):
@@ -26,12 +56,12 @@ class UpdateChecker:
     def __init__(
         self,
         *,
-        requests_get: Callable[..., Any] = requests.get,
+        requests_get: Callable[..., Any] | None = None,
         db_getter: Callable[[], Any] = get_db,
         llm_client: Any = llm,
         sha256_fn: Callable[[str], str] = lambda s: hashlib.sha256(s.encode("utf-8")).hexdigest(),
     ) -> None:
-        self._requests_get = requests_get
+        self._requests_get = requests_get or _get_uc_session().get
         self._db_getter = db_getter
         self._llm = llm_client
         self._sha256_fn = sha256_fn
@@ -56,14 +86,30 @@ class UpdateChecker:
         return chain
 
     def _fetch_url_content(self, url: str) -> Optional[str]:
-        try:
-            resp = self._requests_get(url, timeout=30)
-            if resp.status_code >= 400:
+        max_retries = 2
+        last_exc: Exception | None = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                resp = self._requests_get(url, timeout=45, headers=_HTTP_HEADERS)
+                if resp.status_code >= 400:
+                    return None
+                return (resp.text or "").replace("\x00", "")
+            except requests.exceptions.SSLError:
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                try:
+                    resp = self._requests_get(url, timeout=45, headers=_HTTP_HEADERS, verify=False)
+                    if resp.status_code >= 400:
+                        return None
+                    return (resp.text or "").replace("\x00", "")
+                except Exception as exc:
+                    last_exc = exc
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+                last_exc = exc
+                if attempt < max_retries:
+                    time.sleep(5 * attempt)
+            except Exception:
                 return None
-            # Store as-is (HTML/text) so downstream clause/embedding can still work.
-            return resp.text or ""
-        except Exception:
-            return None
+        return None
 
     def _generate_update_summary(self, old_content: str, new_content: str) -> str:
         if not self._llm.is_ai_available():

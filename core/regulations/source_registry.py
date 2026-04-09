@@ -24,6 +24,34 @@ from db.models import RegulationSource
 
 logger = logging.getLogger(__name__)
 
+_HTTP_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/pdf,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+}
+
+_sr_session: requests.Session | None = None
+
+
+def _get_sr_session() -> requests.Session:
+    global _sr_session
+    if _sr_session is None:
+        _sr_session = requests.Session()
+        _sr_session.headers.update(_HTTP_HEADERS)
+    return _sr_session
+
+
 # Re-use the canonical maps from scraper to avoid duplication.
 from core.regulations.scraper import (
     _resolve_jurisdiction_id,
@@ -324,23 +352,34 @@ class SourceRegistryService:
 
     # -- test source connectivity --
 
-    def test_source(self, url: str, *, timeout: int = 15) -> dict[str, Any]:
+    def test_source(self, url: str, *, timeout: int = 30) -> dict[str, Any]:
         """
         Probe a URL and return reachability + content-type + content length.
         Does NOT scrape or store anything.
+        Falls back to verify=False on SSL errors.
         """
+        import urllib3
+
+        session = _get_sr_session()
         try:
-            resp = requests.get(url, timeout=timeout, stream=True)
-            content_type = (resp.headers.get("content-type") or "unknown").split(";")[0].strip()
-            content_length = len(resp.content)
-            return {
-                "ok": resp.status_code < 400,
-                "status_code": resp.status_code,
-                "content_type": content_type,
-                "content_length": content_length,
-            }
+            resp = session.get(url, timeout=timeout, stream=True)
+        except requests.exceptions.SSLError:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            try:
+                resp = session.get(url, timeout=timeout, stream=True, verify=False)
+            except requests.RequestException as exc:
+                return {"ok": False, "status_code": None, "error": str(exc)}
         except requests.RequestException as exc:
             return {"ok": False, "status_code": None, "error": str(exc)}
+
+        content_type = (resp.headers.get("content-type") or "unknown").split(";")[0].strip()
+        content_length = len(resp.content)
+        return {
+            "ok": resp.status_code < 400,
+            "status_code": resp.status_code,
+            "content_type": content_type,
+            "content_length": content_length,
+        }
 
 
 # Module-level singletons for convenient import.

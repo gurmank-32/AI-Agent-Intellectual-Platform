@@ -103,10 +103,14 @@ def _section_system_health() -> None:
     with c3:
         with st.container(border=True):
             st.markdown("**LLM Provider**")
-            st.markdown(
-                '<span class="rc-dot rc-dot-green"></span>Operational',
-                unsafe_allow_html=True,
+            llm_ok = (
+                config.settings.has_anthropic_key
+                or config.settings.has_openai_key
+                or config.settings.has_google_key
             )
+            dot = "rc-dot-green" if llm_ok else "rc-dot-red"
+            label = "Operational" if llm_ok else "No API key"
+            st.markdown(f'<span class="rc-dot {dot}"></span>{label}', unsafe_allow_html=True)
 
     with c4:
         with st.container(border=True):
