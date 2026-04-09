@@ -1,30 +1,30 @@
 category,city_name,law_name,hyperlink,state_code
 State,California-Statewide,California Tenant Protection Act (AB 1482),https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=201920200AB1482,CA
 State,California-Statewide,California Civil Code - Landlord Tenant,https://leginfo.legislature.ca.gov/faces/codes_displayexpandedbranch.xhtml?tocCode=CIV&division=3.&title=5.&part=4.&chapter=2.&article=,CA
-State,California-Statewide,California Fair Employment and Housing Act (FEHA),https://www.dfeh.ca.gov/housing/,CA
+State,California-Statewide,California Fair Employment and Housing Act (FEHA),https://calcivilrights.ca.gov/housing/,CA
 State,California-Statewide,California Security Deposit Law (Civil Code 1950.5),https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1950.5&lawCode=CIV,CA
 State,California-Statewide,California Department of Insurance - Homeowners,https://www.insurance.ca.gov/01-consumers/105-type/95-guides/01-homeown/,CA
 State,California-Statewide,California Renters Insurance Guide,https://www.insurance.ca.gov/01-consumers/105-type/95-guides/03-renters/,CA
 City,Los Angeles,LA Rent Stabilization Ordinance (RSO),https://housing.lacity.gov/residents/rso-overview,CA
-City,Los Angeles,LA Housing Department - Tenant Rights,https://housing.lacity.gov/residents/tenant-protections,CA
-City,San Francisco,SF Rent Board - Rent Ordinance,https://sfrb.org/san-francisco-rent-ordinance,CA
+City,Los Angeles,LA Housing Department - Tenant Rights,https://housing.lacity.org/renter-protections-2,CA
+City,San Francisco,SF Rent Board - Rent Ordinance,https://sfrb.org/ordinance-regulations,CA
 City,San Francisco,SF Tenant Rights,https://sftu.org/tenants-rights/,CA
-City,San Diego,San Diego Tenant Protection Ordinance,https://www.sandiego.gov/tenant-protection-ordinance,CA
-State,NewYork-Statewide,New York Housing Stability and Tenant Protection Act 2019,https://www.nysenate.gov/legislation/laws/RPP/A7,NY
-State,NewYork-Statewide,New York Real Property Law,https://www.nysenate.gov/legislation/laws/RPP,NY
-State,NewYork-Statewide,NY Department of Financial Services - Insurance,https://www.dfs.ny.gov/consumers/homeowners_insurance,NY
-State,NewYork-Statewide,New York Security Deposit Law (GOL 7-108),https://www.nysenate.gov/legislation/laws/GOB/7-108,NY
+City,San Diego,San Diego Tenant Protection Ordinance,https://www.sandiego.gov/citycouncil/cd9/housing-tenant-protections,CA
+State,NewYork-Statewide,New York Housing Stability and Tenant Protection Act 2019,https://newyork.public.law/laws/n.y._real_property_law_article_7,NY
+State,NewYork-Statewide,New York Real Property Law,https://newyork.public.law/laws/n.y._real_property_law,NY
+State,NewYork-Statewide,NY Department of Financial Services - Insurance,https://www.dfs.ny.gov/consumers/help_for_homeowners/homeowner_tenant_guide,NY
+State,NewYork-Statewide,New York Security Deposit Law (GOL 7-108),https://newyork.public.law/laws/n.y._general_obligations_law_section_7-108,NY
 City,New York City,NYC Rent Stabilization,https://rentguidelinesboard.cityofnewyork.us/resources/faqs/rent-stabilization/,NY
 City,New York City,NYC Tenant Rights - HPD,https://www.nyc.gov/site/hpd/renters/tenants-rights.page,NY
-City,New York City,NYC Housing Maintenance Code,https://www.nyc.gov/site/hpd/about/housing-maintenance-code.page,NY
-Federal,Texas-Statewide,HUD Pet Policy in Federally Assisted Housing,https://www.ecfr.gov/current/title-24/subtitle-B/chapter-I/subchapter-A/part-5/subpart-C,TX
+City,New York City,NYC Housing Maintenance Code,https://www.nyc.gov/site/hpd/services-and-information/code-enforcement.page,NY
+Federal,Texas-Statewide,HUD Pet Policy in Federally Assisted Housing,https://www.ecfr.gov/current/title-24/part-5/subject-group-ECFRf02e5eaeed5e91d,TX
 Federal,Texas-Statewide,Fair Housing Act - Assistance Animals,https://archives.hud.gov/news/2020/HUDAsstAnimalNC1-28-2020.pdf,TX
 State,California-Statewide,California Pet Friendly Housing Act (AB 2216),https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240AB2216,CA
-State,NewYork-Statewide,New York Pet Law for Tenants,https://www.nysenate.gov/legislation/laws/RPP/227-O,NY
+State,NewYork-Statewide,New York Pet Law for Tenants (RPP Art 7),https://newyork.public.law/laws/n.y._real_property_law_article_7,NY
 State,Texas-Statewide,Texas Property Code - Pet Deposits and Policies,https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm,TX
 Federal,Texas-Statewide,NFIP - National Flood Insurance Program,https://www.floodsmart.gov/,TX
-State,Texas-Statewide,Texas Department of Insurance - Homeowners,https://www.tdi.texas.gov/consumer/cb-homeowners.html,TX
-State,NewYork-Statewide,NY Homeowners Insurance Guide,https://www.dfs.ny.gov/consumers/homeowners_insurance,NY
+State,Texas-Statewide,Texas Department of Insurance - Homeowners,https://www.tdi.texas.gov/pubs/consumer/cb025.html,TX
+State,NewYork-Statewide,NY Homeowners Insurance Guide,https://www.dfs.ny.gov/consumers/help_for_homeowners/insurance/choosing_a_policy,NY
 State,Texas-Statewide,Texas Penal Code - Theft,https://statutes.capitol.texas.gov/Docs/PE/htm/PE.31.htm,TX
 Renters,Dallas,Texas Property Code Ch.92 - Habitability,https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm,TX
 Renters,Dallas,Texas Property Code 92.056 - Repairs After Notice,https://statutes.capitol.texas.gov/Docs/PR/htm/PR.92.htm#92.056,TX
@@ -67,14 +67,14 @@ Rental insurance,Colorado,Colorado DORA Division of Insurance — Renters Insura
 Rental insurance,Boulder,City of Boulder — Landlord Tenant Handbook,https://bouldercolorado.gov/landlord-tenant-handbook,CO
 Rental insurance,Denver,Denver Dept of Housing Stability,https://denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Department-of-Housing-Stability,CO
 Rental insurance,Denver,Denver Renters Housing Handbook 2026 (PDF),https://www.denvergov.org/files/assets/public/v/1/housing-stability/documents/renters-housing-handbook-english-_-sept-2025-edits.pdf,CO
-Rental insurance,Colorado,Colorado Housing Connects,https://coloradohousingconnects.org,CO
+Rental insurance,Colorado,Colorado Housing Connects,https://www.coloradohousingconnects.org,CO
 Rental insurance,Colorado,Colorado DORA — Are You Disaster Ready,https://doi.colorado.gov/insurance-products/homeowners/renters-insurance/being-prepared/are-you-disaster-ready,CO
 Rental insurance,Colorado,Colorado Water Conservation Board — Flood Insurance FAQ,https://cwcb.colorado.gov/flood-insurance-faq,CO
 Rental insurance,New York,NY Dept of Financial Services — Renters Insurance,https://www.dfs.ny.gov/consumers/help_for_homeowners/renters_tenants/renters_insurance,NY
 Rental insurance,New York,NY DFS — Homeowners & Tenants Insurance Guide,https://www.dfs.ny.gov/consumers/help_for_homeowners/homeowner_tenant_guide,NY
 Rental insurance,New York,NY Attorney General — Tenants Page,https://ag.ny.gov/resources/individuals/tenants-homeowners/tenants,NY
 Rental insurance,New York,NY AG — Residential Tenants Rights Guide,https://ag.ny.gov/publications/residential-tenants-rights-guide,NY
-Rental insurance,New York,NY Senate — Real Property Law Chapter 50,https://www.nysenate.gov/legislation/laws/RPP,NY
+Rental insurance,New York,NY Senate — Real Property Law Chapter 50,https://newyork.public.law/laws/n.y._real_property_law,NY
 Rental insurance,New York City,NYC HPD — Tenants Rights and Responsibilities,https://www.nyc.gov/site/hpd/renters/tenants-rights.page,NY
 Rental insurance,New York City,NYC Rent Guidelines Board,https://rentguidelinesboard.cityofnewyork.us/,NY
 Rental insurance,New York City,NYC HPD — Section 8 Housing Choice Voucher Program,https://www.nyc.gov/site/hpd/services-and-information/about-section-8.page,NY
@@ -90,13 +90,11 @@ Rental insurance,California,CA Dept of Insurance — FAIR Plan (insurer of last 
 Rental insurance,Los Angeles,HACLA — Section 8 Landlord Information (Los Angeles),https://www.hacla.org/en/about-section-8/landlord-information,CA
 Rental insurance,California,CA OES — Wildfire Recovery Housing Assistance,https://wildfirerecovery.caloes.ca.gov/general-info/housing-assistance/,CA
 Rental insurance,California,CA Courts — California Tenants Guide 2025 (PDF),https://dre.ca.gov/files/pdf/2025_Landlord_Tenant_Guide.pdf,CA
+Rental insurance,Massachusetts,MA AG — Guide to Landlord and Tenant Rights 2025 (PDF),https://www.mass.gov/doc/2025-guide-to-landlord-tenant-rights-11182025/download,MA
 Rental insurance,Massachusetts,Mass.gov — Renters Insurance,https://www.mass.gov/info-details/renters-insurance,MA
-Rental insurance,Massachusetts,Mass.gov DOI — Protecting Your Belongings with Renters Insurance,https://www.mass.gov/info-details/protecting-your-belongings-with-renters-insurance,MA
-Rental insurance,Massachusetts,MA Attorney General — Guide to Landlord and Tenant Rights 2025,https://www.mass.gov/guides/the-attorney-generals-guide-to-landlord-and-tenant-rights,MA
-Rental insurance,Massachusetts,Mass.gov — MA Law About Landlord and Tenant (MGL),https://www.mass.gov/info-details/massachusetts-law-about-landlord-and-tenant,MA
 Rental insurance,Massachusetts,Mass.gov — Landlords and Tenants Rights Hub,https://www.mass.gov/landlords-and-tenants-rights-and-responsibilities,MA
-Rental insurance,Massachusetts,Mass.gov DOI — Flood Assistance and Insurance Information,https://www.mass.gov/info-details/flood-assistance-and-insurance-information,MA
-Rental insurance,Massachusetts,Mass.gov EOHLC — Housing Assistance for MA Residents,https://www.mass.gov/info-details/massachusetts-housing-assistance-emergency-and-long-term-help,MA
-Rental insurance,Massachusetts,Mass.gov — MA Law About Public and Subsidized Housing,https://www.mass.gov/info-details/massachusetts-law-about-public-subsidized-and-emergency-housing,MA
-Rental insurance,Massachusetts,Mass.gov DOI — Short-Term Rental Insurance (Chapter 337),https://www.mass.gov/info-details/short-term-rental-insurance,MA
-Rental insurance,Massachusetts,Mass.gov DOI — Flood Insurance Options for MA Residents 2025,https://www.mass.gov/news/flood-insurance-options-for-massachusetts-residents,MA
+Rental insurance,Massachusetts,MA General Laws Ch.186 — Landlord Tenant (Tenancies),https://malegislature.gov/Laws/GeneralLaws/PartII/TitleI/Chapter186,MA
+Rental insurance,Massachusetts,MA General Laws Ch.186 s15B — Security Deposits,https://malegislature.gov/Laws/GeneralLaws/PartII/TitleI/Chapter186/Section15B,MA
+Rental insurance,Massachusetts,MA General Laws Ch.93A — Consumer Protection (Tenant),https://malegislature.gov/Laws/GeneralLaws/PartI/TitleXV/Chapter93A,MA
+Rental insurance,Massachusetts,MLRI — MA Law Reform Institute Housing,https://www.mlri.org/housing/,MA
+Rental insurance,Massachusetts,MA Landlord Tenant Rights Guide,https://ipropertymanagement.com/laws/massachusetts-landlord-tenant-rights,MA
